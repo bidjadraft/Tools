@@ -1,0 +1,599 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>مدونة بجاد الأثري - أداة تقسيم الفيديو</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css"/>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;700&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+  <style>
+    body {
+      margin: 0;
+      font-family: "Cairo", "Segoe UI", "Arial", sans-serif;
+      background: #18181b;
+      color: #e5e7eb;
+      line-height: 1.6;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+    header {
+      background: #18181b;
+      padding: 16px 18px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid #23232a;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 2px 8px #0008;
+    }
+    .profile {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .profile a {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-decoration: none;
+    }
+    .profile-img {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 2px solid #23232a;
+      box-shadow: 0 2px 8px #0003;
+      transition: transform 0.3s ease;
+    }
+    .profile-img:hover {
+      transform: scale(1.1);
+      box-shadow: 0 4px 16px #2563ebaa;
+    }
+    .username {
+      font-size: 1.1em;
+      color: #e5e7eb;
+      font-weight: 700;
+      margin-left: 10px;
+      font-family: "Cairo", "Segoe UI", "Arial", sans-serif;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      user-select: none;
+    }
+    .username a {
+      color: #e5e7eb;
+      font-weight: 700;
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .username a:hover,
+    .username a:focus {
+      color: #60a5fa;
+      outline: none;
+      text-decoration: none;
+    }
+    .username .blue {
+      color: #60a5fa;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+    }
+    .socials {
+      display: flex;
+      gap: 16px;
+    }
+    .socials a {
+      color: #a1a1aa;
+      font-size: 1.6em;
+      transition: color 0.3s, transform 0.3s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-decoration: none;
+    }
+    .socials a:hover,
+    .socials a:focus {
+      color: #60a5fa;
+      transform: scale(1.2);
+      outline: none;
+    }
+    .page {
+      width: 95%;
+      max-width: 600px;
+      padding: 20px 25px 30px 25px;
+      box-sizing: border-box;
+      direction: rtl;
+      text-align: right;
+      user-select: none;
+      overflow-y: auto;
+      max-height: calc(100vh - 100px);
+      background: transparent !important;
+      box-shadow: none !important;
+      border-radius: 0 !important;
+      border: none !important;
+      margin: 20px auto;
+      display: block;
+    }
+    label {
+      display: none;
+    }
+    input[type="text"] {
+      padding: 14px 16px;
+      font-size: 16px;
+      border-radius: 12px;
+      border: none;
+      background: #2d2d2d;
+      color: #e5e7eb;
+      width: 100%;
+      box-sizing: border-box;
+      margin-bottom: 20px;
+      outline: none;
+      transition: background-color 0.3s ease;
+      direction: ltr;
+      text-align: left;
+    }
+    input[type="text"]::placeholder {
+      color: #636e72;
+      direction: rtl;
+      text-align: right;
+    }
+    select {
+      width: 60px;
+      padding: 10px 0;
+      cursor: pointer;
+      text-align: center;
+      margin-bottom: 8px;
+      background: #222;
+      color: #e5e7eb;
+      border-radius: 10px;
+      border: none;
+      font-size: 18px;
+      font-weight: bold;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.192);
+      transition: background 0.2s;
+      direction: ltr;
+    }
+    input[type="text"]:focus, select:focus {
+      background-color: #353535;
+      box-shadow: 0 0 10px #60a5fa;
+    }
+    .time-pair {
+      border: 2px solid #60a5fa;
+      padding: 18px 10px;
+      border-radius: 18px;
+      margin-bottom: 28px;
+      background: #1e1e22;
+      position: relative;
+      transition: box-shadow 0.3s ease;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      box-shadow: 0 0 18px rgba(96, 165, 250, 0.5);
+      min-width: 0;
+      direction: rtl;
+    }
+    .time-pair:hover {
+      box-shadow: 0 0 24px #60a5fa;
+      background: rgba(96, 165, 250, 0.13);
+    }
+    .time-pair h3 {
+      margin: 0 0 14px 0;
+      color: #60a5fa;
+      font-weight: 700;
+      font-size: 1.25rem;
+      user-select: none;
+      text-align: center;
+      width: 100%;
+      letter-spacing: 1px;
+      direction: rtl;
+    }
+    .time-inputs {
+      display: flex;
+      gap: 16px;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 8px;
+      width: 100%;
+      direction: ltr;
+    }
+    .colon {
+      font-size: 28px;
+      font-weight: 700;
+      user-select: none;
+      margin: 0 2px;
+      color: #60a5fa;
+    }
+    button.add-time {
+      background-color: #00b894;
+      color: white;
+      border: none;
+      padding: 18px 0;
+      font-size: 32px;
+      border-radius: 30px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+      margin-bottom: 32px;
+      width: 100%;
+      font-weight: 700;
+      box-shadow: 0 6px 16px rgba(0, 184, 148, 0.7);
+      user-select: none;
+      direction: rtl;
+    }
+    button.add-time:hover {
+      background-color: #019875;
+      box-shadow: 0 8px 22px rgba(0, 152, 117, 0.9);
+    }
+    button.submit-btn, .action-btn {
+      background-color: #2563eb;
+      color: white;
+      border: none;
+      padding: 18px 0;
+      font-size: 20px;
+      border-radius: 30px;
+      cursor: pointer;
+      width: 100%;
+      transition: background-color 0.3s ease;
+      font-weight: 700;
+      box-shadow: 0 6px 18px rgba(37, 99, 235, 0.8);
+      user-select: none;
+      margin-bottom: 15px;
+      direction: rtl;
+    }
+    button.submit-btn:hover, .action-btn:hover {
+      background-color: #1d4ed8;
+      box-shadow: 0 8px 24px rgba(29, 78, 216, 1);
+    }
+    button.delete-btn {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      background-color: #d63031;
+      border: none;
+      color: white;
+      padding: 2px 10px;
+      border-radius: 16px;
+      font-size: 12px;
+      cursor: pointer;
+      transition: background-color 0.3s ease, transform 0.2s ease;
+      user-select: none;
+      min-width: 0;
+      min-height: 0;
+      line-height: 1.2;
+      direction: rtl;
+    }
+    button.delete-btn:hover {
+      background-color: #b71c1c;
+      transform: scale(1.1);
+    }
+    .code-container {
+      position: relative;
+      margin-top: 30px;
+      direction: ltr;
+      text-align: left;
+    }
+    pre {
+      background: #23232a;
+      padding: 24px;
+      border-radius: 24px;
+      overflow-x: auto;
+      font-size: 15px;
+      white-space: pre-wrap;
+      word-wrap: break-word;
+      color: #e5e7eb;
+      direction: ltr;
+      text-align: left;
+      max-height: 320px;
+      box-shadow: 0 0 24px rgba(96, 165, 250, 0.5);
+      user-select: text;
+      padding-top: 50px;
+    }
+    pre::-webkit-scrollbar {
+      height: 10px;
+    }
+    pre::-webkit-scrollbar-thumb {
+      background: #60a5fa;
+      border-radius: 6px;
+    }
+    pre::-webkit-scrollbar-track {
+      background: #1e1e22;
+    }
+    .copy-icon-btn {
+      position: absolute;
+      top: 10px;
+      left: 15px;
+      background-color: #3d3d3d;
+      color: #60a5fa;
+      border: none;
+      padding: 8px 12px;
+      border-radius: 10px;
+      cursor: pointer;
+      font-size: 16px;
+      transition: background-color 0.3s ease, color 0.3s ease;
+      z-index: 10;
+      direction: ltr;
+    }
+    .copy-icon-btn:hover {
+      background-color: #60a5fa;
+      color: #18181b;
+    }
+    @media (max-width: 768px) {
+      .page {
+        max-width: 95%;
+      }
+      select {
+        width: 55px;
+        font-size: 15px;
+      }
+      button.add-time {
+        font-size: 28px;
+        padding: 16px 0;
+      }
+      button.submit-btn, .action-btn {
+        font-size: 18px;
+        padding: 16px 0;
+      }
+      .time-pair h3 {
+        font-size: 1.1rem;
+      }
+    }
+    @media (max-width: 480px) {
+      .page {
+        max-width: 100%;
+        padding: 15px 20px 25px 20px;
+      }
+      select {
+        width: 45px;
+        font-size: 14px;
+      }
+      button.add-time {
+        font-size: 24px;
+        padding: 14px 0;
+      }
+      button.submit-btn, .action-btn {
+        font-size: 16px;
+        padding: 14px 0;
+      }
+      .time-pair h3 {
+        font-size: 1rem;
+      }
+      .copy-icon-btn {
+        font-size: 14px;
+        padding: 6px 10px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="profile">
+      <a href="https://bidjadraft.github.io/links" title="زيارة صفحة بجاد الأثري" aria-label="زيارة صفحة بجاد الأثري">
+        <img
+          class="profile-img"
+          src="https://i.imgur.com/zTwTusT.jpeg"
+          alt="Profile"
+        />
+      </a>
+      <div class="username">
+        <a href="https://bidjadraft.github.io/blog" title="زيارة صفحة بجاد الأثري" aria-label="زيارة صفحة بجاد الأثري">
+          <span>بجاد</span> <span class="blue">الأثري</span>
+        </a>
+      </div>
+    </div>
+    <nav aria-label="روابط التواصل الاجتماعي" class="socials">
+      <a href="https://github.com/bidjadraft" title="GitHub" aria-label="GitHub" target="_blank" rel="noopener noreferrer"><i class="fab fa-github"></i></a>
+      <a href="https://youtube.com/@bidjadraft" title="يوتيوب" aria-label="يوتيوب" target="_blank" rel="noopener noreferrer"><i class="fab fa-youtube"></i></a>
+      <a href="https://t.me/s/bidjadraft" title="تلغرام" aria-label="تلغرام" target="_blank" rel="noopener noreferrer"><i class="fab fa-telegram"></i></a>
+    </nav>
+  </header>
+
+  <form id="splitForm" class="page">
+    <input type="text" id="folderPath" name="folderPath" placeholder="مسار المجلد" required />
+
+    <input type="text" id="videoFilePath" name="videoFilePath" placeholder="مسار الملف" required />
+
+    <div id="timesContainer">
+      <div class="time-pair">
+        <h3>المقطع رقم 1</h3>
+        <button type="button" class="delete-btn" style="display:none;">حذف</button>
+        <div class="time-inputs start-time">
+          <select name="startHours[]" required title="ساعات البداية"></select><span class="colon">:</span>
+          <select name="startMinutes[]" required title="دقائق البداية"></select><span class="colon">:</span>
+          <select name="startSeconds[]" required title="ثواني البداية"></select>
+        </div>
+        <div class="time-inputs end-time">
+          <select name="endHours[]" required title="ساعات النهاية"></select><span class="colon">:</span>
+          <select name="endMinutes[]" required title="دقائق النهاية"></select><span class="colon">:</span>
+          <select name="endSeconds[]" required title="ثواني النهاية"></select>
+        </div>
+      </div>
+    </div>
+
+    <button type="button" class="add-time" id="addTimeBtn" title="إضافة مقطع جديد">+</button>
+
+    <button type="submit" class="submit-btn">إنشاء سكربت</button>
+  </form>
+
+  <div id="outputPage" class="page" style="display:none;">
+    <div class="code-container">
+      <button type="button" class="copy-icon-btn" id="copyScriptBtn" title="نسخ السكربت">
+        <i class="fa-solid fa-copy"></i>
+      </button>
+      <pre><code class="language-bash" id="outputScript"></code></pre>
+    </div>
+    <button type="button" class="action-btn" id="backToFormBtn">العودة</button>
+  </div>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const timesContainer = document.getElementById('timesContainer');
+      const addTimeBtn = document.getElementById('addTimeBtn');
+      const splitForm = document.getElementById('splitForm');
+      const outputPage = document.getElementById('outputPage');
+      const outputScript = document.getElementById('outputScript');
+      const copyScriptBtn = document.getElementById('copyScriptBtn');
+      const backToFormBtn = document.getElementById('backToFormBtn');
+
+      function fillSelect(select, max) {
+        for (let i = 0; i <= max; i++) {
+          const val = i.toString().padStart(2, '0');
+          const option = document.createElement('option');
+          option.value = val;
+          option.textContent = val;
+          select.appendChild(option);
+        }
+      }
+
+      function initTimeSelectors(container) {
+        const startHours = container.querySelector('select[name="startHours[]"]');
+        const startMinutes = container.querySelector('select[name="startMinutes[]"]');
+        const startSeconds = container.querySelector('select[name="startSeconds[]"]');
+        const endHours = container.querySelector('select[name="endHours[]"]');
+        const endMinutes = container.querySelector('select[name="endMinutes[]"]');
+        const endSeconds = container.querySelector('select[name="endSeconds[]"]');
+
+        fillSelect(startHours, 23);
+        fillSelect(startMinutes, 59);
+        fillSelect(startSeconds, 59);
+        fillSelect(endHours, 23);
+        fillSelect(endMinutes, 59);
+        fillSelect(endSeconds, 59);
+      }
+
+      function updateClipNumbers() {
+        const clips = timesContainer.querySelectorAll('.time-pair');
+        clips.forEach((clip, idx) => {
+          const h3 = clip.querySelector('h3');
+          h3.textContent = `المقطع رقم ${idx + 1}`;
+          const deleteBtn = clip.querySelector('.delete-btn');
+          deleteBtn.style.display = clips.length > 1 ? 'block' : 'none';
+        });
+      }
+
+      let clipCount = 1;
+      function addTimePair() {
+        clipCount++;
+        const div = document.createElement('div');
+        div.classList.add('time-pair');
+        div.innerHTML = `
+          <h3>المقطع رقم ${clipCount}</h3>
+          <button type="button" class="delete-btn">حذف</button>
+          <div class="time-inputs start-time">
+            <select name="startHours[]" required title="ساعات البداية"></select><span class="colon">:</span>
+            <select name="startMinutes[]" required title="دقائق البداية"></select><span class="colon">:</span>
+            <select name="startSeconds[]" required title="ثواني البداية"></select>
+          </div>
+          <div class="time-inputs end-time">
+            <select name="endHours[]" required title="ساعات النهاية"></select><span class="colon">:</span>
+            <select name="endMinutes[]" required title="دقائق النهاية"></select><span class="colon">:</span>
+            <select name="endSeconds[]" required title="ثواني النهاية"></select>
+          </div>
+        `;
+        timesContainer.appendChild(div);
+        initTimeSelectors(div);
+        updateClipNumbers();
+
+        div.querySelector('.delete-btn').addEventListener('click', () => {
+          div.remove();
+          updateClipNumbers();
+        });
+      }
+
+      function showPage(pageElement) {
+        splitForm.style.display = 'none';
+        outputPage.style.display = 'none';
+        pageElement.style.display = 'block';
+      }
+
+      initTimeSelectors(timesContainer.querySelector('.time-pair'));
+      updateClipNumbers();
+
+      addTimeBtn.addEventListener('click', addTimePair);
+
+      function toHMS(h, m, s) {
+        return [h, m, s].map(v => v.toString().padStart(2, '0')).join(':');
+      }
+
+      function timeToSeconds(h, m, s) {
+        return h * 3600 + m * 60 + s;
+      }
+
+      splitForm.addEventListener('submit', e => {
+        e.preventDefault();
+
+        let folderPath = splitForm.folderPath.value.trim();
+        const videoFilePath = splitForm.videoFilePath.value.trim();
+
+        if (!folderPath) {
+          alert('يرجى إدخال مسار حفظ الملفات.');
+          return;
+        }
+        if (!videoFilePath) {
+          alert('يرجى إدخال مسار ملف الفيديو.');
+          return;
+        }
+
+        if (!folderPath.endsWith('/')) {
+          folderPath += '/';
+        }
+
+        const startHours = Array.from(splitForm.querySelectorAll('select[name="startHours[]"]')).map(s => parseInt(s.value, 10));
+        const startMinutes = Array.from(splitForm.querySelectorAll('select[name="startMinutes[]"]')).map(s => parseInt(s.value, 10));
+        const startSeconds = Array.from(splitForm.querySelectorAll('select[name="startSeconds[]"]')).map(s => parseInt(s.value, 10));
+
+        const endHours = Array.from(splitForm.querySelectorAll('select[name="endHours[]"]')).map(s => parseInt(s.value, 10));
+        const endMinutes = Array.from(splitForm.querySelectorAll('select[name="endMinutes[]"]')).map(s => parseInt(s.value, 10));
+        const endSeconds = Array.from(splitForm.querySelectorAll('select[name="endSeconds[]"]')).map(s => parseInt(s.value, 10));
+
+        for (let i = 0; i < startHours.length; i++) {
+          const startSec = timeToSeconds(startHours[i], startMinutes[i], startSeconds[i]);
+          const endSec = timeToSeconds(endHours[i], endMinutes[i], endSeconds[i]);
+
+          if (startSec >= endSec) {
+            alert(`خطأ في المقطع رقم ${i + 1}: مدة نهاية المقطع يجب أن تكون أكبر من مدة بدايته.`);
+            return;
+          }
+        }
+
+        let script = '#!/bin/bash\n\n';
+        script += `file="${videoFilePath}"\n\n`;
+
+        for (let i = 0; i < startHours.length; i++) {
+          const startHMS = toHMS(startHours[i], startMinutes[i], startSeconds[i]);
+          const endHMS = toHMS(endHours[i], endMinutes[i], endSeconds[i]);
+          const clipNum = i + 1;
+          script += `ffmpeg -i "$file" -ss ${startHMS} -to ${endHMS} -c copy "${folderPath}q${clipNum}.mp4"\n`;
+        }
+
+        outputScript.textContent = script;
+        hljs.highlightElement(outputScript);
+        showPage(outputPage);
+      });
+
+      copyScriptBtn.addEventListener('click', async () => {
+        try {
+          await navigator.clipboard.writeText(outputScript.textContent);
+          const originalIcon = copyScriptBtn.innerHTML;
+          copyScriptBtn.innerHTML = '<i class="fa-solid fa-check"></i>';
+          setTimeout(() => {
+            copyScriptBtn.innerHTML = originalIcon;
+          }, 1500);
+        } catch (err) {
+          alert('فشل في نسخ السكربت. يرجى النسخ يدوياً.');
+        }
+      });
+
+      backToFormBtn.addEventListener('click', () => {
+        showPage(splitForm);
+      });
+    });
+  </script>
+</body>
+</html>
